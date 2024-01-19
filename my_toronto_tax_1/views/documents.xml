@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="document" name="My Documents" >
+            <t t-call="portal.portal_layout">
+                <t t-set="my_details" t-value="True"/>
+                <div class="o_portal_my_document">
+                    <h3>My Documents</h3>
+                    <div>
+                        
+                    </div>
+                </div>
+            </t>
+    </template>
+
+    <template id="upload_document_link" name="Upload link to frontend portal" inherit_id="portal.user_dropdown">
+            <xpath expr="//*[@id='o_logout_divider']" position="before">
+                <a href="/my/formio/form/new/Tax_Documents_Upload" role="menuitem" class="dropdown-item ps-3">
+                    <i class="fa fa-fw fa-cloud-upload me-1 small text-muted"/> Upload Your Documents
+                </a>
+            </xpath>
+    </template>
+</odoo>

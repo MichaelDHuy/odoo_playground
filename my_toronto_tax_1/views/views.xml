@@ -1,0 +1,149 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+
+    <record model="ir.ui.view" id="my_toronto_tax.list">
+      <field name="name">my_toronto_tax list</field>
+      <field name="model">my_toronto_tax.my_toronto_tax</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="value"/>
+          <!-- <field name="value2"/> -->
+        </tree>
+      </field>
+    </record>
+
+    <record id="view_formio_form_tree_user" model="ir.ui.view">
+        <field name="name">formio.form.tree</field>
+        <field name="model">formio.form</field>
+        <field name="arch" type="xml">
+            <tree string="Form Submissions User" create="false" edit="false" delete="false">
+                  <!-- decoration-info="state in ('DRAFT')"
+                  decoration-success="state in ('COMPLETE')"
+                  decoration-muted="state in ('CANCEL')" -->
+                <field name="id"/>
+                <field name="uuid" optional="hide"/>
+                <field name="sequence" optional="hide"/>
+                <field name="title" optional="hide"/>
+                <!-- <field name="builder_id" /> -->
+                <field name="user_id"/>
+                <field name="submission_partner_id"/>
+                <field name="submission_date"/>
+                <!-- <field name="state" optional="hide"/> -->
+                <button
+                    string="Open Form"
+                    name="action_view_formio"
+                    type="object"
+                    class="btn-sm btn-primary"
+                    icon="fa-arrow-right"/>
+                <!-- <field name="portal_share" optional="show"/>
+                <field name="public_share" optional="show"/>
+                <field name="public_access_rule_type" optional="hide"/>
+                <field name="public_access" optional="show"/>
+                <field name="public_create" optional="hide"/>
+                <field name="res_model_name" string="Resource Type" optional="show"/>
+                <field name="initial_res_model_name" string="Resource Type #1" optional="hide"/>
+                <field name="res_name" optional="show"/>
+                <field name="res_partner_id" optional="show"/>
+                <field name="write_date" optional="hide"/>
+                <field name="create_date" optional="hide"/> -->
+            </tree>
+        </field>
+    </record>
+
+    <!-- explicit search view definition -->
+    <record id="view_formio_form_search_user" model="ir.ui.view">
+        <field name="name">formio.form.search</field>
+        <field name="model">formio.form</field>
+        <field name="inherit_id" ref="formio.view_formio_form_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='title']" position="replace"></xpath>
+            <xpath expr="//filter[@name='builder_id']" position="replace"></xpath>
+        </field>
+    </record>
+
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="my_toronto_tax.action_windowAll">
+      <field name="name">View All Document Submission</field>
+      <field name="res_model">formio.form</field>
+      <field name="domain">[('title', '=', 'Uploading Your Tax Documents')]</field>
+      <field name="view_id" ref="view_formio_form_tree_user"/>
+      <field name="view_mode">tree</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="my_toronto_tax.action_window2022">
+      <field name="name">View Document Submission - Tax 2022</field>
+      <field name="res_model">formio.form</field>
+      <field name="domain">[('title', '=', 'Uploading Your Tax Documents'),('submission_data' , 'like' , '"taxYear": "2022"')]</field>
+      <field name="view_id" ref="view_formio_form_tree_user"/>
+      <field name="view_mode">tree</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="my_toronto_tax.action_window2023">
+      <field name="name">View Document Submission - Tax 2023</field>
+      <field name="res_model">formio.form</field>
+      <field name="domain">[('title', '=', 'Uploading Your Tax Documents'),('submission_data' , 'like' , '"taxYear": "2023"')]</field>
+       <field name="view_id" ref="view_formio_form_tree_user"/>
+      <field name="view_mode">tree</field>
+    </record>
+
+
+    <!-- server action to the one above -->
+
+    <record model="ir.actions.server" id="my_toronto_tax.action_server">
+      <field name="name">my_toronto_tax server</field>
+      <field name="model_id" ref="model_my_toronto_tax_my_toronto_tax"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": model._name,
+        }
+      </field>
+    </record>
+
+
+    <!-- Top menu item -->
+
+    <menuitem name="My Toronto Tax" id="my_toronto_tax.menu_root"/>
+
+    <!-- menu categories -->
+
+    <menuitem name="View Documents" id="my_toronto_tax.menu_1" parent="my_toronto_tax.menu_root"/>
+    <!-- <menuitem name="Menu 2" id="my_toronto_tax.menu_2" parent="my_toronto_tax.menu_root"/> -->
+
+    <!-- actions -->
+    <menuitem name="Tax Year (All)" id="my_toronto_tax.menu_0_list" parent="my_toronto_tax.menu_1"
+              action="my_toronto_tax.action_windowAll"/> 
+    <menuitem name="Tax Year 2002" id="my_toronto_tax.menu_1_list" parent="my_toronto_tax.menu_1"
+              action="my_toronto_tax.action_window2022"/>
+    <menuitem name="Tax Year 2023" id="my_toronto_tax.menu_2_list" parent="my_toronto_tax.menu_1"
+              action="my_toronto_tax.action_window2023"/>          
+    <!-- <menuitem name="Server to list" id="my_toronto_tax" parent="my_toronto_tax.menu_2"
+              action="my_toronto_tax.action_server"/> -->
+
+    <record model="ir.ui.view" id="task_deadline_compute_form">
+          <field name="name">Project Deadline Compute </field>
+          <field name="model">project.task</field>
+          <field name="inherit_id" ref="project.view_task_form2"/>
+          <field name="arch" type="xml">
+                <xpath expr="//field[@name='date_deadline']" position="attributes">
+                    <attribute name="attrs">{'readonly':[('is_computed_deadline','=',True)], 'invisible': [('is_closed', '=', True)]}</attribute>
+                </xpath>
+                <field name="date_deadline" position="after">
+                    <field name="is_computed_deadline"/>
+                    <!-- <field name="days_shifted" attrs="{'invisible':[('is_computed_deadline', '!=', True)]}" />
+                    <field name="shifted_unit" attrs="{'invisible':[('is_computed_deadline', '!=', True)]}" /> -->
+                    <label for="days_shifted" string="Days Shifted" attrs="{'invisible':[('is_computed_deadline', '!=', True)]}"/>
+                    <div class="o_row" attrs="{'invisible':[('is_computed_deadline', '!=', True)]}">
+                    <field name="days_shifted" style="width: 50%"/>
+                    <field name="shifted_unit" style="width: 50%" class="oe_inline"/>
+                    </div>
+                </field>
+          </field>
+    </record>
+
+  </data>
+</odoo>
